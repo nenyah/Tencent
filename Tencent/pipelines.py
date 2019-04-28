@@ -6,14 +6,25 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 
+from Tencent.items import ContentItem, TencentItem
+
+
 class TencentPipeline(object):
     def __init__(self):
-        self.f = open("tencent.json","w")
+        self.itemfile = open('tencent.json', 'w')
+        self.contentfile = open('tencent_cotent.json', 'w')
 
     def process_item(self, item, spider):
-        content = json.dumps(dict(item), ensure_ascii=False) + ",\n"
-        self.f.write(content)
+        if isinstance(item, TencentItem):
+            content = json.dumps(
+                dict(item), ensure_ascii=False, indent=4) + ",\n"
+            self.itemfile.write(content)
+        elif isinstance(item, ContentItem):
+            content = json.dumps(
+                dict(item), ensure_ascii=False, indent=4) + ",\n"
+            self.contentfile.write(content)
         return item
 
     def close_spider(self, spider):
-        self.f.close()
+        self.itemfile.close()
+        self.contentfile.close()
